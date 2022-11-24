@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:stripe="http://www.mulesoft.org/schema/mule/stripe" 
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/stripe http://www.mulesoft.org/schema/mule/stripe/current/mule-stripe.xsd">
+	<flow name="stripe-create-customer" doc:id="78d1e6e2-a1a8-4edf-9a26-0020fe54180f" >
+		<http:listener doc:name="Listener" doc:id="64b91551-7b8e-43bf-9be3-df2f777bf8e1" config-ref="HTTP_Listener_config" path="/createCustomer"/>
+		<ee:transform doc:name="Transform Message" doc:id="98ea3fcd-1008-4375-8b7d-4b9c57ef4d60" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/x-www-form-urlencoded
+---
+{
+	"name": "Prathvi",
+	"email": "prathvi.shetty@gmail.com"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<stripe:create-v1-customers doc:name="Create a customer" doc:id="74f64635-7262-4671-ae6c-47fa26767a5a" config-ref="Stripe_Connector_Config"/>
+	</flow>
+	<flow name="stripe-delete-customer" doc:id="f026d30e-9718-4241-9b65-53febf7f3f6a" >
+		<http:listener doc:name="Listener" doc:id="87f42a81-f72a-438c-b17c-9f5211e2ce2e" config-ref="HTTP_Listener_config" path="/deleteCustomer/{customerId}" allowedMethods="DELETE"/>
+		<ee:transform doc:name="Transform Message" doc:id="ab36b2ff-6579-4ffa-a422-f9409d401dc5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.uriParams.'customerId']]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<stripe:delete-v1-customers-by-customer doc:name="Delete a customer" doc:id="203f9c36-8aa9-4b04-b5e9-644eacea451c" config-ref="Stripe_Connector_Config" customer="#[payload]"/>
+	</flow>
+	<flow name="get-all-customers" doc:id="91b79f60-5705-491d-887c-a53840ff30ac" >
+		<http:listener doc:name="Listener" doc:id="4467ee2d-7fc1-4aeb-8ab7-9e19c5611ec7" config-ref="HTTP_Listener_config" path="/listAll">
+			<http:response >
+				<http:body ><![CDATA[#[output application/json --- payload]]]></http:body>
+			</http:response>
+		</http:listener>
+		<stripe:get-v1-customers doc:name="List all customers" doc:id="43be9d6b-f23a-4691-a508-b439450deb1a" config-ref="Stripe_Connector_Config"/>
+	</flow>
+</mule>
