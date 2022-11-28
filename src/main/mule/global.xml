@@ -7,7 +7,14 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/stripe http://www.mulesoft.org/schema/mule/stripe/current/mule-stripe.xsd">
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d355059b-57ab-4d03-855c-e449eb0ee04d" >
-		<http:listener-connection host="0.0.0.0" port="8081" />
+		<http:listener-connection host="0.0.0.0" port="8080" />
+		<http:listener-interceptors >
+			<http:cors-interceptor allowCredentials="true">
+				<http:origins >
+					<http:origin url="http://localhost:8081" accessControlMaxAge="30000" />
+				</http:origins>
+			</http:cors-interceptor>
+		</http:listener-interceptors>
 	</http:listener-config>
 	<stripe:config name="Stripe_Connector_Config" doc:name="Stripe Connector Config" doc:id="a466045e-b6ab-499e-927a-8b07e068fb43" >
 		<stripe:api-key-connection authorization="${stripeSecretKey}" />
