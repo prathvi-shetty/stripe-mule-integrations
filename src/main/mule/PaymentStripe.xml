@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:stripe="http://www.mulesoft.org/schema/mule/stripe" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/stripe http://www.mulesoft.org/schema/mule/stripe/current/mule-stripe.xsd">
+	<flow name="stripe-payment-session" doc:id="407c51e8-a4d9-4c0a-a144-1b97e98099c8" >
+		<http:listener doc:name="Listener" doc:id="e815e07c-907c-4a3c-81d2-a35d866d9f10" config-ref="HTTP_Listener_config" path="/paymentSession" allowedMethods="POST" />
+		<ee:transform doc:name="Transform Message" doc:id="c6f86b24-76cc-4f79-8730-55b1d36bee3d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/x-www-form-urlencoded
+---
+{
+	"success_url": "http://localhost:8081/success.html",
+	"cancel_url": "http://localhost:8081/cancel.html",
+	"line_items[0][price]": "price_1M7fUfSFBmomNFtJN6s8Q2Dg",
+	"line_items[0][quantity]": "1",
+	"mode": "payment"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<stripe:create-v1-checkout-sessions doc:name="Create a Session for Payment" doc:id="9a544aea-7bb7-47e8-a284-66227323c212" config-ref="Stripe_Connector_Config" />
+	</flow>
+</mule>

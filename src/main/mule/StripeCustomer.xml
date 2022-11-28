@@ -41,7 +41,7 @@ attributes.uriParams.'customerId']]></ee:set-payload>
 		</http:listener>
 		<stripe:get-v1-customers doc:name="List all customers" doc:id="43be9d6b-f23a-4691-a508-b439450deb1a" config-ref="Stripe_Connector_Config"/>
 	</flow>
-	<flow name="stripe-connector-pocFlow" doc:id="96b5b570-3225-4311-9b90-fc239eb9ad22" >
+	<flow name="stripe-connector-poc-flow" doc:id="96b5b570-3225-4311-9b90-fc239eb9ad22" >
 		<http:listener doc:name="Listener" doc:id="5484fb53-6ffa-4dd6-ab1f-9301dd08438f" config-ref="HTTP_Listener_config" path="/session" allowedMethods="POST"/>
 		<ee:transform doc:name="Transform Message" doc:id="a354b707-f4ac-4e48-9d65-e41aceb45d63" >
 			<ee:message >
