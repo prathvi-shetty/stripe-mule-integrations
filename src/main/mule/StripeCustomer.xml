@@ -41,22 +41,4 @@ attributes.uriParams.'customerId']]></ee:set-payload>
 		</http:listener>
 		<stripe:get-v1-customers doc:name="List all customers" doc:id="43be9d6b-f23a-4691-a508-b439450deb1a" config-ref="Stripe_Connector_Config"/>
 	</flow>
-	<flow name="stripe-connector-poc-flow" doc:id="96b5b570-3225-4311-9b90-fc239eb9ad22" >
-		<http:listener doc:name="Listener" doc:id="5484fb53-6ffa-4dd6-ab1f-9301dd08438f" config-ref="HTTP_Listener_config" path="/session" allowedMethods="POST"/>
-		<ee:transform doc:name="Transform Message" doc:id="a354b707-f4ac-4e48-9d65-e41aceb45d63" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/x-www-form-urlencoded
----
-{
-	"success_url": "http://localhost:8081/success.html",
-	"cancel_url": "http://localhost:8081/cancel.html",
-	"line_items[0][price]": "price_1M7fUfSFBmomNFtJN6s8Q2Dg",
-	"line_items[0][quantity]": "1",
-	"mode": "payment"
-}]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<stripe:create-v1-checkout-sessions doc:name="Create a Session" doc:id="50f04a67-430f-4673-a9ba-167526877299" config-ref="Stripe_Connector_Config"/>
-	</flow>
 </mule>

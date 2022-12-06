@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:stripe="http://www.mulesoft.org/schema/mule/stripe"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/stripe http://www.mulesoft.org/schema/mule/stripe/current/mule-stripe.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="createProduct" doc:id="3bb1da26-14b3-4897-86fb-c65b29e76396" >
+		<http:listener doc:name="Listener" doc:id="5eceebf9-4d6b-443a-8bf8-77682b97fe1b" config-ref="HTTP_Listener_config" path="/createProduct" allowedMethods="POST"/>
+		<ee:transform doc:name="Transform Message" doc:id="1b870b06-1de7-44ac-81cd-62f7bd2de7f3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/x-www-form-urlencoded
+---
+{
+	"name": payload.name,
+	"active": true,
+	"description": payload.description,
+	"default_price_data[currency]": "USD",
+	"default_price_data[unit_amount_decimal]": payload.price,
+	"url": payload.url
+	}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<stripe:create-v1-products doc:name="Create a product" doc:id="adedcf3b-5804-4919-8b49-dc4b9a7b1564" config-ref="Stripe_Connector_Config"/>
+	</flow>
+	<flow name="getProductById" doc:id="27bbb29c-6894-4118-a4db-992ed8ec90ce" >
+		<http:listener doc:name="Listener" doc:id="cf276b23-0ba2-4f78-ab9e-dfc7e2447e57" config-ref="HTTP_Listener_config" path="/getProduct/{productId}">
+		</http:listener>
+		<stripe:get-v1-products-by-id doc:name="Retrieve a product" doc:id="1c7f3cee-9c4c-4ad4-bd2e-f66d50a24264" config-ref="Stripe_Connector_Config" id="#[attributes.uriParams.'productId']"/>
+	</flow>
+	<flow name="updateProduct" doc:id="d9d22ed4-5bcd-47e6-b98b-a15694c3a8d9" >
+		<http:listener doc:name="Listener" doc:id="0231db2e-cb31-4f0c-b314-de403e157468" config-ref="HTTP_Listener_config" path="/update/{productId}" allowedMethods="POST"/>
+		<ee:transform doc:name="Transform Message" doc:id="864ef891-4c80-4f14-add4-5c4ca4ffe059" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/x-www-form-urlencoded
+---
+{
+	"name": payload.name,
+	"active": payload.active,
+	"description": payload.description,
+	"url": payload.url
+	}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<stripe:create-v1-products-by-id doc:name="Update a product" doc:id="0fb0fd33-19bd-4f32-a113-b5e16745280b" config-ref="Stripe_Connector_Config" id="#[attributes.uriParams.'productId']"/>
+	</flow>
+	<flow name="deleteProduct" doc:id="659e93cc-f6ad-470d-82d0-5078976c3ad1" >
+		<http:listener doc:name="Listener" doc:id="145719c7-4cf4-4d7b-8c12-7d1331902f9b" config-ref="HTTP_Listener_config" allowedMethods="DELETE" path="/deleteProduct/{productId}"/>
+		<stripe:delete-v1-products-by-id doc:name="Delete a product" doc:id="d63076a9-ef0c-4408-ba02-618db8438ee3" config-ref="Stripe_Connector_Config" id="#[attributes.uriParams.'productId']"/>
+	</flow>
+</mule>

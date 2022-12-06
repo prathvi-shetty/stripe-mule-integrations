@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:stripe="http://www.mulesoft.org/schema/mule/stripe"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/stripe http://www.mulesoft.org/schema/mule/stripe/current/mule-stripe.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="InvoiceConfigurationFlow" doc:id="a3a6634f-30f2-4010-b21f-3ad7a472862d" >
+		<stripe:on-new-invoice-listener doc:name="On new invoice listener" doc:id="2be4daaf-84e5-4847-a028-0641c68398c0" config-ref="Stripe_Connector_Config">
+			<scheduling-strategy >
+				<fixed-frequency />
+			</scheduling-strategy>
+		</stripe:on-new-invoice-listener>
+		<logger level="INFO" doc:name="Logger" doc:id="ab43c12b-9532-470c-b9c4-5aaa10347f78" message="#[payload]"/>
+	</flow>
+</mule>
